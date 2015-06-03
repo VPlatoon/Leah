@@ -1,0 +1,19 @@
+
+
+
+
+
+.build/uno/src/sketch.cpp : src/sketch.ino
+	@mkdir -p .build/uno/src
+	@echo [93msrc/sketch.ino[0m
+	@/usr/local/bin/ino preproc  -o $@ $^
+
+.build/uno/src/mini_driver_firmware.cpp : src/mini_driver_firmware.ino
+	@mkdir -p .build/uno/src
+	@echo [93msrc/mini_driver_firmware.ino[0m
+	@/usr/local/bin/ino preproc  -o $@ $^
+
+
+all : .build/uno/src/sketch.cpp .build/uno/src/mini_driver_firmware.cpp
+	@true
+
