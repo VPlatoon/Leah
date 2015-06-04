@@ -68,6 +68,8 @@ const int RIGHT_ENCODER_PIN_2 = 5;
 const int RX_PIN = 0;
 const int TX_PIN = 1;
 
+const int LED_PIN = 13;
+
 const uint8_t RENC_SINGLE_BITMASK = 0x02;
 const uint8_t LENC_SINGLE_BITMASK = 0x01;
 
@@ -88,7 +90,7 @@ const int ABSOLUTE_MIN_PWM = 400;
 const int ABSOLUTE_MAX_PWM = 2600;
 
 const uint32_t NUM_TICKS_PER_MOTOR_WAVE = 100;
-const unsigned long MOTOR_COMMAND_TIMEOUT_MS = 2000;
+const unsigned long MOTOR_COMMAND_TIMEOUT_MS = 5000;
 
 //------------------------------------------------------------------------------
 // This class is provided because the Arduino Servo library maps minimum and 
@@ -241,24 +243,18 @@ void setup()
     pinMode( A4, INPUT );
     pinMode( A5, INPUT );
 
-    Serial.begin( 9600 );
-//
-//    bluetoothSerial.begin(9600);
+    Serial.begin(9600);
 }
 
 //------------------------------------------------------------------------------
 void loop()
 {
     // Read any commands from the serial connection
-    receiveMessages();
-
-    // If the bluetooth is active, prioritize this connection
-    if (bluetoothSerial.available())
-        // process messages from Bluetooth first
-        processMessageBluetooth();
-
+    //receiveMessages();
+    // process messages from Bluetooth first
 
     // Turn off the motors if we haven't received a command for a while
+    processMessageBluetooth();
     unsigned long curTime = millis();
 
     if ( curTime - gLastCommandTime > MOTOR_COMMAND_TIMEOUT_MS )
@@ -286,7 +282,6 @@ void loop()
     {
         // Linear interpolation from 20Hz to 80Hz
         long int maxOcrChange = MOTOR_PWM_80HZ_OCR2 - MOTOR_PWM_20HZ_OCR2;
-
         int ocrDiff = (int)(maxOcrChange
             *(long int)((int)lowestDutyCycle - (int)MOTOR_PWM_20HZ_DUTY_CYCLE)
             /(long int)((int)MOTOR_PWM_80HZ_DUTY_CYCLE - (int)MOTOR_PWM_20HZ_DUTY_CYCLE));
@@ -514,7 +509,7 @@ void processMessage()
 
 void processMessageBluetooth()
 {
-    char command = bluetoothSerial.read();
+    char command = Serial.read();
     bool bGotCommand = true;
 
     if ('f' == command) // forward
@@ -529,7 +524,7 @@ void processMessageBluetooth()
     {
       gLeftMotorDirection = eMD_Backwards;
       gRightMotorDirection = eMD_Backwards;
-      gRightMotorDutyCycle = 30;
+      gLeftMotorDutyCycle = 30;
       gRightMotorDutyCycle = 30;
     }
     else if ('t' == command)
@@ -561,10 +556,10 @@ void processMessageBluetooth()
         gLeftMotorDutyCycle = 10;
     }
     else
-        bGotCommand = false;
+      bGotCommand = false;
 
     if (bGotCommand)
-            gLastCommandTime = curTime;
+      gLastCommandTime = millis();
 }
 
 //------------------------------------------------------------------------------
