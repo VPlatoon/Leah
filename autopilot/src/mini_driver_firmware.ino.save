@@ -53,14 +53,13 @@ const uint8_t RESPONSE_ID_INVALID_CHECK_SUM = 3;
 const uint8_t RESPONSE_ID_BATTERY_READING = 4;    // Not used any more
 const uint8_t RESPONSE_ID_SENSOR_READINGS = 5;
 
-const char TELECOMMAND_ID_FORWARD = 0x38; //136; //0X38;
-const char TELECOMMAND_ID_STOP = 0x35; //133; //0X35;
-const char TELECOMMAND_ID_BACKWARD = 0x32; //130; //0X32;
-const char TELECOMMAND_ID_ROTATE_LEFT = 0x39; //135; //0X39;
-const char TELECOMMAND_ID_ROTATE_RIGHT = 0x37; //137; //0X37;
-const char TELECOMMAND_ID_PAN_LEFT = 0x031; //129; //0X31;
-const char TELECOMMAND_ID_PAN_RIGHT = 0x33; //131; //0X37;
-const char TERMINAL_SIGNAL = 0X00;
+const uint8_t TELECOMMAND_ID_FORWARD = 0x38;
+const uint8_t TELECOMMAND_ID_BACKWARD = 0x32;
+const uint8_t TELECOMMAND_ID_ROTATE_LEFT = 0x39;
+const uint8_t TELECOMMAND_ID_ROTATE_RIGHT = ;
+const uint8_t TELECOMMAND_ID_STOP = '5';
+const uint8_t TELECOMMAND_ID_PAN_LEFT = '1';
+const uint8_t TELECOMMAND_ID_PAN_RIGHT = '3';
 
 const int LEFT_MOTOR_DIR_PIN = 7;	// Direction
 const int LEFT_MOTOR_PWM_PIN = 9;	// Pulse Width Modulation
@@ -273,7 +272,7 @@ void setup()
     // initialize potential servo
     gPotentialMeterValue = analogRead(POTENTIAL_METER_PIN);
 
-    Serial.begin(9600);
+    Serial.begin(19200);
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +430,7 @@ void avoidLeftObstacles()
 void avoidLateFrontObstacles()
 {}
 
-	//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void avoidRearObstacles()
 {}
 
@@ -570,47 +569,26 @@ void receiveSimpleMessages()
 		bGotCommand = false;
 		return;
 	}
-//	int num_bytes = Serial.available();
-//	if (num_bytes < 5) {
-//		while (Serial.peek() != -1)
-//			Serial.read();
-//		digitalWrite(LED_PIN, HIGH);
-//		delay(100);
-//		digitalWrite(LED_PIN, LOW);
-//		Serial.print(0x01);
-//		return;
-//	}
-//	char buffer[5];
-//	Serial.readBytes((char*)buffer, 5);
-//	if (buffer[0] != 0x31 || buffer[1] != 0x3B || buffer[3] != 0x3F || buffer[4] != 0x30) {
-//		digitalWrite(LED_PIN, HIGH);
-//		delay(1000);
-//		digitalWrite(LED_PIN, LOW);
-//		Serial.print(0x02);
-//		return;
-//	}
-//	byte command = buffer[3];
-//    int command = Serial.read();
-    //if (command == TERMINAL_SIGNAL)
-	//	return;
-//	byte command1 = Serial.peek();
-		char command = Serial.read();
-  	Serial.write(command);
+	//digitalWrite(LED_PIN, HIGH);
+	//delay(150);
+	//digitalWrite(LED_PIN, LOW);
+    char command = Serial.read();
+    Serial.print(command);
 
     if (TELECOMMAND_ID_FORWARD == command) // forward
     {
       gLeftMotorDirection = eMD_Forwards;
       gRightMotorDirection = eMD_Forwards;
       // set speed
-      gLeftMotorDutyCycle = 50;
-      gRightMotorDutyCycle = 50;
+      gLeftMotorDutyCycle = 30;
+      gRightMotorDutyCycle = 30;
     }
     else if (TELECOMMAND_ID_BACKWARD == command)
     {
       gLeftMotorDirection = eMD_Backwards;
       gRightMotorDirection = eMD_Backwards;
-      gLeftMotorDutyCycle = 50;
-      gRightMotorDutyCycle = 50;
+      gLeftMotorDutyCycle = 30;
+      gRightMotorDutyCycle = 30;
     }
     else if (TELECOMMAND_ID_STOP == command)
     {
@@ -618,29 +596,28 @@ void receiveSimpleMessages()
         gRightMotorDirection = eMD_Forwards;
         gRightMotorDutyCycle = 0;
         gLeftMotorDutyCycle = 0;
-				gPanServoAngle = 90;
     }
     else if (TELECOMMAND_ID_ROTATE_LEFT == command)
     {
         gRightMotorDirection = eMD_Forwards;
         gLeftMotorDirection = eMD_Backwards;
-        gRightMotorDutyCycle = 15;
-        gLeftMotorDutyCycle = -15;
+        gRightMotorDutyCycle = 20;
+        gLeftMotorDutyCycle = -20;
     }
     else if (TELECOMMAND_ID_ROTATE_RIGHT == command)
     {
         gRightMotorDirection = eMD_Backwards;
         gLeftMotorDirection = eMD_Forwards;
-        gRightMotorDutyCycle = -15;
-        gLeftMotorDutyCycle = 15;
+        gRightMotorDutyCycle = -20;
+        gLeftMotorDutyCycle = 20;
     }
     else if (TELECOMMAND_ID_PAN_LEFT == command)
     {
-        gPanServoAngle = constrain( gPanServoAngle - 10, 0, 180 );
+        gPanServoAngle = constrain( gPanServoAngle - 20, 0, 180 );
     }
     else if (TELECOMMAND_ID_PAN_RIGHT == command)
     {
-        gPanServoAngle = constrain( gPanServoAngle + 10, 0, 180 );
+        gPanServoAngle = constrain( gPanServoAngle + 20, 0, 180 );
     }
     else
       bGotCommand = false;

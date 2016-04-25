@@ -1,0 +1,14 @@
+
+
+
+
+
+.build/atmega8/src/mini_driver_firmware.cpp : src/mini_driver_firmware.ino
+	@mkdir -p .build/atmega8/src
+	@echo [93msrc/mini_driver_firmware.ino[0m
+	@/usr/local/bin/ino preproc  -o $@ $^
+
+
+all : .build/atmega8/src/mini_driver_firmware.cpp
+	@true
+

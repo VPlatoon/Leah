@@ -1,3 +1,30 @@
+#include <Arduino.h>
+#include <Servo.h>
+#include "Encoder.h"
+#include "SharpIR.h"
+uint8_t getMessageId();
+uint8_t getMessageSize();
+void setup();
+void loop();
+void avoidEarlyFrontObstacles();
+void avoidLeftObstacles();
+void avoidLateFrontObstacles();
+void avoidRearObstacles();
+void receiveMessages();
+void processMessage();
+void receiveSimpleMessages();
+void sendFirmwareInfoResponse();
+void sendInvalidCommandResponse();
+void sendInvalidCheckSumResponse();
+void sendSensorReadingsMessage(
+    int batteryReading,
+    uint8_t digitalReadings,
+    int analogReadings[ 6 ],
+    int gLastUltrasonicReadingCM,
+    int32_t leftEncoderReading,
+    int32_t rightEncoderReading );
+uint8_t calculateCheckSum( const uint8_t* pData, uint8_t msgSize );
+#line 1 "src/mini_driver_firmware.ino"
 /* Copyright (c) 2014, Dawn Robotics Ltd
 All rights reserved.
 
@@ -26,9 +53,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include <Servo.h>
-#include "Encoder.h"
-#include "SharpIR.h"
+//#include <Servo.h>
+//#include "Encoder.h"
+//#include "SharpIR.h"
 
 //------------------------------------------------------------------------------
 const uint8_t VERSION_MAJOR = 0;
